@@ -1,0 +1,63 @@
+<html>
+<head>
+  <title>Admin | Mobile push showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <h1>Push demo Admin panel</h1>
+
+  <h3>Registered clients</h3>
+
+  <div id="clients"></div>
+
+  <button id="sendNotification">Send notification</button>
+
+<!-- TODO: This is unused. Should I convert the population of the checkboxes to use handlbars? -->
+<script type="x-handlebars">
+  <label>
+    {{name}}
+    <input type="checkbox" name="registration_ids" value="{{subscriptionId}}" />
+  </label>
+</script>
+
+<script>
+$(function() {
+  $.getJSON('/api/registrations', function(data) {
+    window.clients = data.clients;
+    var fieldSet = $("<fieldSet>");
+    for (var i in data.clients) {
+      var input = $("<input>")
+        .attr("type", "checkbox").attr("name", "registration_ids")
+        .val(data.clients[i].subscriptionId);
+      var label = $("<label>")
+        .append(input)
+        .append($("<span>").text(data.clients[i].clientName));
+      fieldSet.append(label);
+    }
+    $("#clients").empty().append(fieldSet);
+  });
+
+  $("#sendNotification").click(function() {
+    var notification = {
+      registration_ids: []
+    };
+    var registration_ids = $("[name=registration_ids]:checked").each(function() {
+      notification.registration_ids.push(this.value);
+    });
+    $.ajax({
+      type: 'POST',
+      url: '/api/notify',
+      data: JSON.stringify(notification),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json"
+    }).done(function(data, textStatus, e) {
+      console.log("successful");
+    });
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Web Push Showcase",
+  "short_name": "Web Push Showcase",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "gcm_sender_id": "106376415192",
+  "gcm_user_visible_only": true
+}

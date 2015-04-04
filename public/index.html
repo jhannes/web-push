@@ -1,0 +1,34 @@
+<html>
+<head>
+  <title>Mobile push showcase</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <h1>Push demo</h1>
+
+  <div id="messages"></div>
+
+  <p id="subscriptionId"></p>
+
+  <p>
+    <label>
+      Your name:
+      <input type="name" id="clientName" />
+    </label>
+
+  </p>
+
+  <button id="showNotification">Show a notification</button>
+
+  <button id="registerForPush">Register for push</button>
+
+  <button id="deregisterFromPush">Deregister from push</button>
+
+  <p>Manage permissions in the <a href="chrome://settings/contentExceptions#notifications">Notification settings</a></p>
+
+  <script src="web-push.js"></script>
+
+</body>
+</html>
