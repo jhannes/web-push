@@ -37,6 +37,7 @@ if (!("serviceWorker" in navigator) || !('PushManager' in window)) {
 }
 
 var sendSubscriptionToServer = function(sub) {
+  console.log("sendSubscriptionToServer", sub);
   $("#registerForPush").prop("disabled", true);
   $("#deregisterFromPush").prop("disabled", false).click(function() {
     sub.unsubscribe().then(function(success) {
@@ -46,14 +47,14 @@ var sendSubscriptionToServer = function(sub) {
     }).catch(function(e) {
       console.error("Failed to unregister", e);
     }).then(function() {
-      return ajax.del('/api/registrations', { subscriptionId: sub.subscriptionId });
+      return ajax.del('/api/registrations', { endpoint: sub.endpoint });
     });
   });
 
-  $("#subscriptionId").text(sub.subscriptionId);
+  $("#subscriptionId").text(sub.endpoint);
   var registration = {
     clientName: $("#clientName").val(),
-    subscriptionId: sub.subscriptionId
+    endpoint: sub.endpoint
   };
   ajax.post('/api/registrations', registration).then(function(e) {
     console.log("successful");
@@ -84,7 +85,7 @@ $(function() {
 
       $("#registerForPush").click(function() {
         localStorage.setItem("clientName", $("#clientName").val());
-        registration.pushManager.subscribe().then(function(sub) {
+        registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
           sendSubscriptionToServer(sub);
         }, function(e) {
           console.warn("subcription unsuccessful", e);

@@ -14,13 +14,6 @@
 
   <button id="sendNotification">Send notification</button>
 
-<!-- TODO: This is unused. Should I convert the population of the checkboxes to use handlbars? -->
-<script type="x-handlebars">
-  <label>
-    {{name}}
-    <input type="checkbox" name="registration_ids" value="{{subscriptionId}}" />
-  </label>
-</script>
 
 <script>
 $(function() {
@@ -29,8 +22,9 @@ $(function() {
     var fieldSet = $("<fieldSet>");
     for (var i in data.clients) {
       var input = $("<input>")
-        .attr("type", "checkbox").attr("name", "registration_ids")
-        .val(data.clients[i].subscriptionId);
+        .addClass("clientEndpoint")
+        .attr("type", "checkbox").attr("name", "endpoints[]")
+        .val(data.clients[i].endpoint);
       var label = $("<label>")
         .append(input)
         .append($("<span>").text(data.clients[i].clientName));
@@ -41,10 +35,10 @@ $(function() {
 
   $("#sendNotification").click(function() {
     var notification = {
-      registration_ids: []
+      endpoints: []
     };
-    var registration_ids = $("[name=registration_ids]:checked").each(function() {
-      notification.registration_ids.push(this.value);
+    $(".clientEndpoint:checked").each(function() {
+      notification.endpoints.push(this.value);
     });
     $.ajax({
       type: 'POST',
