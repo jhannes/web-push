@@ -20,21 +20,8 @@ var ajax = {
 
 };
 
-//   <p>The only browser that currently supports WebPush seems to be <a href="https://www.google.com/chrome/browser/beta.html">Chrome <em>BETA</em></a></p>
 
 
-if (!("serviceWorker" in navigator)) {
-  $("#messages").append($("<p>").text("serviceWorker is not supported"));
-}
-
-if (!('PushManager' in window)) {
-  $("#messages").append($("<p>").text("PushManager is not supported"));
-}
-
-if (!("serviceWorker" in navigator) || !('PushManager' in window)) {
-  $("#messages").append($("<p>")
-      .html('<p>The only browser that currently supports WebPush seems to be <a href="https://www.google.com/chrome/browser/beta.html">Chrome <em>BETA</em></a>'));
-}
 
 var sendSubscriptionToServer = function(sub) {
   console.log("sendSubscriptionToServer", sub);
@@ -56,6 +43,7 @@ var sendSubscriptionToServer = function(sub) {
     clientName: $("#clientName").val(),
     endpoint: sub.endpoint
   };
+  localStorage.setItem("clientName", $("#clientName").val());
   ajax.post('/api/registrations', registration).then(function(e) {
     console.log("successful");
   });
@@ -63,34 +51,85 @@ var sendSubscriptionToServer = function(sub) {
 
 
 $(function() {
+  if (!("serviceWorker" in navigator)) {
+    $("#messages").append($("<p>").text("serviceWorker API is not supported"));
+  }
 
-  $("#showNotification").click(function() {
-    var notification = new Notification('Notification title', {
-      icon: 'johannes-icon.jpg',
-      body: "Hey there! You've been notified!",
-      sound: "notification-sound.ogg"
+  if (!('PushManager' in window)) {
+    $("#messages").append($("<p>").text("PushManager API is not supported"));
+    $("#registerForPush").prop("disabled", true);
+  }
+
+  if (!("Notification" in window)) {
+    $("#showNotification").prop("disabled", true);
+    $("#messages").append($("<p>").text("Notification API is not supported"));
+  }
+
+  if ("Notification" in window) {
+    if (Notification.permission === "denied") {
+      $("#messages").append($("<p>").text("Not permitted to display notifications"));
+      $("#showNotification").prop("disabled", true);
+    }
+    $("#showNotification").click(function() {
+      Notification.requestPermission(function(permission) {
+        console.log("Notification permission", permission);
+        if (permission === "granted") {
+          var notification = new Notification('Notification title', {
+            icon: 'johannes-icon.jpg',
+            body: "Hey there! You've been notified!",
+            sound: "notification-sound.ogg"
+          });
+        } else {
+          $("#messages").append($("<p>").text("Not permitted to display notifications"));
+          if (permission === "denied") {
+            $("#showNotification").prop("disabled", true);
+          }
+        }
+      });
     });
-  });
+  }
+
 
   $("#deregisterFromPush").prop("disabled", true);
   $("#clientName").val(localStorage.getItem("clientName"));
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
-      registration.pushManager.getSubscription().then(function(sub) {
-        if (sub) {
-          sendSubscriptionToServer(sub);
-        }
-      });
+      registration.pushManager.permissionState({userVisibleOnly: true}).then(function(permission) {
+        console.log(permission);
 
-      $("#registerForPush").click(function() {
-        localStorage.setItem("clientName", $("#clientName").val());
-        registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
-          sendSubscriptionToServer(sub);
-        }, function(e) {
-          console.warn("subcription unsuccessful", e);
-          alert(e.message);
-        });
+        if (permission === "granted") {
+          registration.pushManager.getSubscription().then(function(sub) {
+            if (sub) {
+              sendSubscriptionToServer(sub);
+            } else {
+              $("#registerForPush").prop("disabled", false);
+              $("#registerForPush").click(function() {
+                console.log("subscribing");
+                registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
+                  sendSubscriptionToServer(sub);
+                }, function(e) {
+                  console.warn("subcription unsuccessful", e);
+                  alert(e.message);
+                });
+              });              
+            }
+          });          
+        } else if (permission === "denied") {
+          $("#messages").append($("<p>").text("Not permitted to push messages"));
+          $("#registerForPush").prop("disabled", true);
+        } else {
+          $("#registerForPush").prop("disabled", false);
+          $("#registerForPush").click(function() {
+            console.log("subscribing");
+            registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
+              sendSubscriptionToServer(sub);
+            }, function(e) {
+              console.warn("subcription unsuccessful", e);
+              alert(e.message);
+            });
+          });
+        }
       });
     });
   }

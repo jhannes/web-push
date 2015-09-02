@@ -12,6 +12,13 @@
 
   <div id="clients"></div>
 
+  <fieldset>
+    <label>
+      Message to send
+      <input type="text" id="pushMessageText" required />
+    </label>
+  </fieldset>
+
   <button id="sendNotification">Send notification</button>
 
 
@@ -35,6 +42,7 @@ $(function() {
 
   $("#sendNotification").click(function() {
     var notification = {
+      text: $("#pushMessageText").val(),
       endpoints: []
     };
     $(".clientEndpoint:checked").each(function() {
