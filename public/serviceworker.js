@@ -1,4 +1,6 @@
-console.log("Service worker started, version", 3);
+console.log("Service worker started, version", 2);
+
+var details;
 
 
 self.addEventListener('push', function(event) {
@@ -6,19 +8,20 @@ self.addEventListener('push', function(event) {
 
   event.waitUntil(
     self.registration.pushManager.getSubscription().then(function(sub) {
-      return fetch("/api/messages?endpoint=" + sub.endpoint);
+      return fetch("/api/last-message?endpoint=" + sub.endpoint);
     }).then(function(response) {
       return response.json();
-    }).then(function(json) {
-      console.log("registration", json);
-      return json;
-    }).then(function(json) {
+    }).then(function(lastMessage) {
+      console.log(lastMessage);
       var notification = {
-        body: json.messages[0],
-        icon: "johannes-icon.jpg",
+        body: lastMessage.text,
+        icon: lastMessage.icon,
+        sound: "notification-sound.ogg",
+        vibrate: [200, 100, 200, 100, 200, 100, 200],
         tag: "web-push-message"
       };
-      return self.registration.showNotification("A message", notification);
+      details = lastMessage.details;
+      return self.registration.showNotification(lastMessage.title, notification);
     }));
 });
 
@@ -26,5 +29,15 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
   console.log("On notification click", event);
   event.notification.close();
-  clients.openWindow("play-sound.html");
+
+  event.waitUntil(
+    clients.matchAll()
+    .then(function(clientList) {
+      if (clientList.length) {
+        return clientList[0].focus();
+      }
+      return clients.openWindow("/");
+    }).then(function(client) {
+      client.postMessage({details: details})
+    }));
 });

@@ -4,29 +4,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="manifest" href="manifest.json" />
+  <style>
+    #message-content label {
+      display: block;
+      padding: 0.5em;
+    }
+    #message-image label {
+      display: inline-block;
+    }
+    #message-image img {
+      display: block;
+    }
+    #message-image input {
+      display: block;
+      margin: 0.5em auto;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   <h1>Push demo Admin panel</h1>
 
-  <h3>Registered clients</h3>
+  <form>
+    <fieldset>
+      <legend>Recipients</legend>
+      <div id="clients"></div>
+    </fieldset>
 
-  <div id="clients"></div>
+    <fieldset id="message-content">
+      <legend>Message</legend>
+      <label>Title <input type="text" id="pushMessageTitle" value="Push message" required /></label>
+      <label>Text <input type="text" id="pushMessageText" value="JavaZone rocks" required /></label>
+      <label>
+        Description
+        <textarea id="pushMessageDescription">Here you can write a bit more about the message</textarea>
+      </label>
+    </fieldset>
+    <fieldset id="message-image">
+      <legend>Message image</legend>
+      <label><img src="java.png" alt="Java"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="java.png" checked></label>
+      <label><img src="johannes-icon.jpg" alt="Johannes"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="johannes-icon.jpg"></label>
+      <label><img src="cat.jpg" alt="Random cat"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="cat.jpg"></label>
+      <label><img src="sopra-steria.jpeg" alt="Sopra Steria logo"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="sopra-steria.jpeg"></label>
+    </fieldset>
 
-  <fieldset>
-    <label>
-      Message to send
-      <input type="text" id="pushMessageText" required />
-    </label>
-  </fieldset>
-
-  <button id="sendNotification">Send notification</button>
+    <button id="sendNotification">Send notification</button>
+  </form>
 
 
 <script>
 $(function() {
   $.getJSON('/api/registrations', function(data) {
     window.clients = data.clients;
-    var fieldSet = $("<fieldSet>");
+    var fieldSet = $("<div>");
     for (var i in data.clients) {
       var input = $("<input>")
         .addClass("clientEndpoint")
@@ -40,9 +70,13 @@ $(function() {
     $("#clients").empty().append(fieldSet);
   });
 
-  $("#sendNotification").click(function() {
+  $("#sendNotification").click(function(e) {
+    e.preventDefault();
     var notification = {
+      title: $("#pushMessageTitle").val(),
       text: $("#pushMessageText").val(),
+      icon: $("#pushMessageIcon").val(),
+      description: $("#pushMessageDescription").val(),
       endpoints: []
     };
     $(".clientEndpoint:checked").each(function() {

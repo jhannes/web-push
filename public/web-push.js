@@ -23,13 +23,23 @@ var ajax = {
 
 
 
+
+
 var sendSubscriptionToServer = function(sub) {
   console.log("sendSubscriptionToServer", sub);
   $("#registerForPush").prop("disabled", true);
+  $("#schedulePush").prop("disabled", false);
+  $("#schedulePush").click(function() {
+    ajax.post('/api/', registration).then(function(e) {
+      console.log("successful");
+    });
+  });
+
   $("#deregisterFromPush").prop("disabled", false).click(function() {
     sub.unsubscribe().then(function(success) {
       $("#deregisterFromPush").prop("disabled", true);
       $("#registerForPush").prop("disabled", false);
+      $("#schedulePush").prop("disabled", true);
       $("#subscriptionId").empty();
     }).catch(function(e) {
       console.error("Failed to unregister", e);
