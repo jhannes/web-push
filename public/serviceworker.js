@@ -37,7 +37,5 @@ self.addEventListener('notificationclick', function(event) {
         return clientList[0].focus();
       }
       return clients.openWindow("/");
-    }).then(function(client) {
-      client.postMessage({details: details})
     }));
 });

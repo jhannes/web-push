@@ -17,20 +17,14 @@ var ajax = {
       dataType: "json"
     });
   },
-
 };
-
-
-
-
-
 
 var sendSubscriptionToServer = function(sub) {
   console.log("sendSubscriptionToServer", sub);
   $("#registerForPush").prop("disabled", true);
   $("#schedulePush").prop("disabled", false);
   $("#schedulePush").click(function() {
-    ajax.post('/api/', registration).then(function(e) {
+    ajax.post('/api/push-me?endpoint=' + sub.endpoint, registration).then(function(e) {
       console.log("successful");
     });
   });
@@ -106,6 +100,15 @@ $(function() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
       registration.pushManager.permissionState({userVisibleOnly: true}).then(function(permission) {
+        $("#registerForPush").click(function() {
+          console.log("subscribing");
+          registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
+            sendSubscriptionToServer(sub);
+          }, function(e) {
+            console.warn("subcription unsuccessful", e);
+            alert(e.message);
+          });
+        });  
         console.log(permission);
 
         if (permission === "granted") {
@@ -114,15 +117,7 @@ $(function() {
               sendSubscriptionToServer(sub);
             } else {
               $("#registerForPush").prop("disabled", false);
-              $("#registerForPush").click(function() {
-                console.log("subscribing");
-                registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
-                  sendSubscriptionToServer(sub);
-                }, function(e) {
-                  console.warn("subcription unsuccessful", e);
-                  alert(e.message);
-                });
-              });              
+                          
             }
           });          
         } else if (permission === "denied") {
@@ -130,15 +125,6 @@ $(function() {
           $("#registerForPush").prop("disabled", true);
         } else {
           $("#registerForPush").prop("disabled", false);
-          $("#registerForPush").click(function() {
-            console.log("subscribing");
-            registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
-              sendSubscriptionToServer(sub);
-            }, function(e) {
-              console.warn("subcription unsuccessful", e);
-              alert(e.message);
-            });
-          });
         }
       });
     });
