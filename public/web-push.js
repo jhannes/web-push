@@ -1,3 +1,6 @@
+/* globals Notification */
+'use strict';
+
 var ajax = {
   post: function(url, obj) {
     return $.ajax({
@@ -24,13 +27,13 @@ var sendSubscriptionToServer = function(sub) {
   $("#registerForPush").prop("disabled", true);
   $("#schedulePush").prop("disabled", false);
   $("#schedulePush").click(function() {
-    ajax.post('/api/push-me?endpoint=' + sub.endpoint, registration).then(function(e) {
+    ajax.post('/api/push-me?endpoint=' + sub.endpoint, registration).then(function() {
       console.log("successful");
     });
   });
 
   $("#deregisterFromPush").prop("disabled", false).click(function() {
-    sub.unsubscribe().then(function(success) {
+    sub.unsubscribe().then(function() {
       $("#deregisterFromPush").prop("disabled", true);
       $("#registerForPush").prop("disabled", false);
       $("#schedulePush").prop("disabled", true);
@@ -48,7 +51,7 @@ var sendSubscriptionToServer = function(sub) {
     endpoint: sub.endpoint
   };
   localStorage.setItem("clientName", $("#clientName").val());
-  ajax.post('/api/registrations', registration).then(function(e) {
+  ajax.post('/api/registrations', registration).then(function() {
     console.log("successful");
   });
 };
@@ -78,7 +81,7 @@ $(function() {
       Notification.requestPermission(function(permission) {
         console.log("Notification permission", permission);
         if (permission === "granted") {
-          var notification = new Notification('Notification title', {
+          new Notification('Notification title', {
             icon: 'johannes-icon.jpg',
             body: "Hey there! You've been notified!",
             sound: "notification-sound.ogg"
@@ -98,6 +101,11 @@ $(function() {
   $("#clientName").val(localStorage.getItem("clientName"));
 
   if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      console.log('on message');
+      console.log(e);
+    });
+
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
       registration.pushManager.permissionState({userVisibleOnly: true}).then(function(permission) {
         $("#registerForPush").click(function() {
@@ -106,7 +114,6 @@ $(function() {
             sendSubscriptionToServer(sub);
           }, function(e) {
             console.warn("subcription unsuccessful", e);
-            alert(e.message);
           });
         });  
         console.log(permission);
@@ -130,3 +137,4 @@ $(function() {
     });
   }
 });
+

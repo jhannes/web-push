@@ -54,6 +54,8 @@
 
 <script>
 $(function() {
+  "use strict";
+
   $.getJSON('/api/registrations', function(data) {
     window.clients = data.clients;
     var fieldSet = $("<div>");
@@ -88,7 +90,7 @@ $(function() {
       data: JSON.stringify(notification),
       contentType: "application/json; charset=utf-8",
       dataType: "json"
-    }).done(function(data, textStatus, e) {
+    }).done(function() {
       console.log("successful");
     });
   });

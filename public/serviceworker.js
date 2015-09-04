@@ -1,10 +1,9 @@
-console.log("Service worker started, version", 2);
+/* globals self */
+"use strict";
 
-var details;
 
 
 self.addEventListener('push', function(event) {
-  "use strict";
 
   event.waitUntil(
     self.registration.pushManager.getSubscription().then(function(sub) {

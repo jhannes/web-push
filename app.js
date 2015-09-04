@@ -1,3 +1,6 @@
+/* jshint node: true */
+'use strict';
+
 var bodyParser = require('body-parser');
 var express = require('express');
 var app = express();
@@ -7,7 +10,7 @@ var request = require('request');
 
 var apiKey = process.env.API_KEY;
 if (!apiKey) {
-  console.error("Must be started with API_KEY");
+  console.error('Must be started with API_KEY');
   return;
 }
 
@@ -51,16 +54,16 @@ app.get('/api/messages', function(req, res) {
 
 app.post('/api/push-me', function(req, res) {
   res.status(200).end();
-  console.log("Notify in 5 seconds");
+  console.log('Notify in 5 seconds');
   var endpoint = req.query.endpoint;
   setTimeout(function() {
-    console.log("Pushing to " + endpoint);
+    console.log('Pushing to ' + endpoint);
     var lastMessage = {
-      title: "Hello",
-      text: "Hello",
-      icon: "java.png",
-      description: "Description"
-    }
+      title: 'Hello',
+      text: 'Hello',
+      icon: 'java.png',
+      description: 'Description'
+    };
     clients[endpoint].lastMessage = lastMessage;
     sendGoogleNotifications([endpoint]);
   }, 5000);
@@ -70,7 +73,7 @@ app.get('/api/last-message', function(req, res) {
   res.json(clients[req.query.endpoint].lastMessage).end();
 });
 
-app.post('/api/notify', function(req, res) {
+app.post('/api/notify', function(req) {
   var endpoints = req.body.endpoints;
   console.log(endpoints);
 
@@ -79,7 +82,7 @@ app.post('/api/notify', function(req, res) {
     text: req.body.text,
     icon: req.body.icon,
     description: req.body.description
-  }
+  };
 
   endpoints.forEach(function(endpoint) {
     clients[endpoint].lastMessage = lastMessage;
@@ -90,15 +93,15 @@ app.post('/api/notify', function(req, res) {
   sendMozillaNotifications(endpoints);
 });
 
-var server = app.listen(process.env.PORT || 1337, function() {
-  console.log("started");
+app.listen(process.env.PORT || 1337, function() {
+  console.log('started');
 });
 
 function sendMozillaNotifications(endpoints) {
   endpoints.filter(function(e) {
-    return e.indexOf("https://updates.push.services.mozilla.com") == 0;
+    return e.indexOf('https://updates.push.services.mozilla.com') === 0;
   }).map(function(endpoint) {
-    console.log("PUT ", endpoint);
+    console.log('PUT ', endpoint);
     request.put(endpoint, function(err, apiRes, body) {
       console.log(err, body);
     });
@@ -108,23 +111,23 @@ function sendMozillaNotifications(endpoints) {
 function sendGoogleNotifications(endpoints) {
   var headers = { 'Authorization': 'key=' + apiKey };
   var googleNotificationIds = endpoints.filter(function(e) {
-    return e.indexOf("https://android.googleapis.com/gcm/send/") == 0;
+    return e.indexOf('https://android.googleapis.com/gcm/send/') === 0;
   }).map(function(e) {
-    return e.substring("https://android.googleapis.com/gcm/send/".length);
+    return e.substring('https://android.googleapis.com/gcm/send/'.length);
   });
   if (!googleNotificationIds.length) return;
 
   var notification = { registration_ids: googleNotificationIds };
-  console.log("POST to https://android.googleapis.com/gcm/send", notification);
+  console.log('POST to https://android.googleapis.com/gcm/send', notification);
   var client = requestJSON.createClient('https://android.googleapis.com/', {headers: headers});
   client.post('gcm/send', notification, function(err, gcmRes, body) {
     if (!err) {
-      console.log("Notification successful", body);
+      console.log('Notification successful', body);
     } else if (gcmRes && gcmRes.statusCode === 401) {
       console.log(err);
-      console.warn("GCM call unauthorized - check API key");
+      console.warn('GCM call unauthorized - check API key');
     } else {
-      console.error("Failed to send notification", err);
+      console.error('Failed to send notification', err);
     }
   });
 }
