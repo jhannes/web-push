@@ -14,10 +14,6 @@ if (!apiKey) {
   return;
 }
 
-app.use('/static', express.static('public'));
-app.use('/favicon.ico', express.static('public/favicon.ico'));
-app.use(bodyParser.json()); // for parsing application/json
-
 app.use(function requireHttps(req, res, next) {
   console.log("requireHttps middlware", req.headers.host);
   if(req.headers.host != "localhost:1337" && req.headers['x-forwarded-proto'] != 'https') {
@@ -27,6 +23,10 @@ app.use(function requireHttps(req, res, next) {
     return next();
   }
 });
+
+app.use('/static', express.static('public'));
+app.use('/favicon.ico', express.static('public/favicon.ico'));
+app.use(bodyParser.json()); // for parsing application/json
 
 app.get('/', function(req, res) {
   res.redirect('/static');
