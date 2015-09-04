@@ -18,6 +18,16 @@ app.use('/static', express.static('public'));
 app.use('/favicon.ico', express.static('public/favicon.ico'));
 app.use(bodyParser.json()); // for parsing application/json
 
+app.use(function requireHttps(req, res, next) {
+  console.log("requireHttps middlware", req.headers.host);
+  if(req.headers.host != "localhost:1337" && req.headers['x-forwarded-proto'] != 'https') {
+    console.log("Redirecting to https");
+    return res.redirect('https://' + req.headers.host + req.url);
+  } else {
+    return next();
+  }
+});
+
 app.get('/', function(req, res) {
   res.redirect('/static');
 });

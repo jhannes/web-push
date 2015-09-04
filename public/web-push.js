@@ -25,9 +25,10 @@ var ajax = {
 var sendSubscriptionToServer = function(sub) {
   console.log("sendSubscriptionToServer", sub);
   $("#registerForPush").prop("disabled", true);
+  
   $("#schedulePush").prop("disabled", false);
   $("#schedulePush").click(function() {
-    ajax.post('/api/push-me?endpoint=' + sub.endpoint, registration).then(function() {
+    ajax.post('/api/push-me?endpoint=' + sub.endpoint).then(function() {
       console.log("successful");
     });
   });
