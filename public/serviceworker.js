@@ -1,10 +1,9 @@
-/* globals self */
+/* globals self, clients, fetch */
 "use strict";
 
 
-
 self.addEventListener('push', function(event) {
-
+  console.log("Received", event);
   event.waitUntil(
     self.registration.pushManager.getSubscription().then(function(sub) {
       return fetch("/api/last-message?endpoint=" + sub.endpoint);
@@ -19,7 +18,6 @@ self.addEventListener('push', function(event) {
         vibrate: [200, 100, 200, 100, 200, 100, 200],
         tag: "web-push-message"
       };
-      details = lastMessage.details;
       return self.registration.showNotification(lastMessage.title, notification);
     }));
 });

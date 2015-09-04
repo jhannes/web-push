@@ -58,14 +58,11 @@ app.post('/api/push-me', function(req, res) {
   var endpoint = req.query.endpoint;
   setTimeout(function() {
     console.log('Pushing to ' + endpoint);
-    var lastMessage = {
+    sendPushMessages([endpoint], {
       title: 'Hello',
-      text: 'Hello',
-      icon: 'java.png',
-      description: 'Description'
-    };
-    clients[endpoint].lastMessage = lastMessage;
-    sendGoogleNotifications([endpoint]);
+      text: 'Delayed message from push server',
+      icon: 'java.png'      
+    })
   }, 5000);
 });
 
@@ -77,25 +74,28 @@ app.post('/api/notify', function(req) {
   var endpoints = req.body.endpoints;
   console.log(endpoints);
 
-  var lastMessage = {
+  sendPushMessages(endpoints, {
     title: req.body.title,
     text: req.body.text,
     icon: req.body.icon,
     description: req.body.description
-  };
-
-  endpoints.forEach(function(endpoint) {
-    clients[endpoint].lastMessage = lastMessage;
   });
-  console.log(clients);
-
-  sendGoogleNotifications(endpoints);
-  sendMozillaNotifications(endpoints);
 });
 
 app.listen(process.env.PORT || 1337, function() {
   console.log('started');
 });
+
+function sendPushMessages(endpoints, message) {
+  endpoints.forEach(function(endpoint) {
+    if (clients[endpoint]) {
+      clients[endpoint].lastMessage = message;
+    }
+  });
+
+  sendGoogleNotifications(endpoints);
+  sendMozillaNotifications(endpoints);
+}
 
 function sendMozillaNotifications(endpoints) {
   endpoints.filter(function(e) {
