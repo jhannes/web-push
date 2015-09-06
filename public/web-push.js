@@ -139,5 +139,29 @@ $(function() {
       });
     });
   }
+
+  if ('safari' in window && 'pushNotification' in window.safari) {
+    var pushId = "web.net.openright.webpush";
+    var website = "https://web-push.herokuapp.com/push";
+    var permissionData = window.safari.pushNotification.permission(pushId);
+    console.log(permissionData);
+    setApiSupport("PushManager", permissionData.permission);
+
+    $("#registerForPush").click(function() {
+      window.safari.pushNotification.requestPermission(website, pushId, {}, function(permission) {
+        setApiSupport("PushManager", permissionData.permission);
+
+        $("#subscriptionId").text(permissionData.deviceToken);
+        var registration = {
+          clientName: $("#clientName").val(),
+          endpoint: permissionData.deviceToken
+        };
+        localStorage.setItem("clientName", $("#clientName").val());
+        ajax.post('/api/registrations', registration).then(function() {
+          console.log("successful");
+        });
+      });
+    });
+  }
 });
 
