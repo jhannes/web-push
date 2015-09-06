@@ -22,13 +22,13 @@ var ajax = {
   },
 };
 
-var sendSubscriptionToServer = function(sub) {
+function sendSubscriptionToServer(sub) {
   console.log("sendSubscriptionToServer", sub);
   $("#registerForPush").prop("disabled", true);
-  
-  $("#schedulePush").prop("disabled", false);
-  $("#schedulePush").click(function() {
-    ajax.post('/api/push-me?endpoint=' + sub.endpoint).then(function() {
+
+  $(".schedulePush").prop("disabled", false);
+  $(".schedulePush").click(function() {
+    ajax.post('/api/push-me?endpoint=' + sub.endpoint + "&message=" + $(this).data("message")).then(function() {
       console.log("successful");
     });
   });
@@ -37,7 +37,7 @@ var sendSubscriptionToServer = function(sub) {
     sub.unsubscribe().then(function() {
       $("#deregisterFromPush").prop("disabled", true);
       $("#registerForPush").prop("disabled", false);
-      $("#schedulePush").prop("disabled", true);
+      $(".schedulePush").prop("disabled", true);
       $("#subscriptionId").empty();
     }).catch(function(e) {
       console.error("Failed to unregister", e);
@@ -57,30 +57,21 @@ var sendSubscriptionToServer = function(sub) {
   });
 };
 
+function setApiSupport(apiName, support) {
+  $("." + apiName + "-support").hide();
+  $("." + apiName + "-support." + support).show();
+}
+
 
 $(function() {
-  if (!("serviceWorker" in navigator)) {
-    $("#messages").append($("<p>").text("serviceWorker API is not supported"));
-  }
-
-  if (!('PushManager' in window)) {
-    $("#messages").append($("<p>").text("PushManager API is not supported"));
-    $("#registerForPush").prop("disabled", true);
-  }
-
   if (!("Notification" in window)) {
-    $("#showNotification").prop("disabled", true);
-    $("#messages").append($("<p>").text("Notification API is not supported"));
+    setApiSupport("notifications", "missing");
   }
 
   if ("Notification" in window) {
-    if (Notification.permission === "denied") {
-      $("#messages").append($("<p>").text("Not permitted to display notifications"));
-      $("#showNotification").prop("disabled", true);
-    }
+    setApiSupport("notifications", Notification.permission);
     $("#showNotification").click(function() {
       Notification.requestPermission(function(permission) {
-        console.log("Push notifications", permission);
         if (permission === "granted") {
           new Notification('Notification message', {
             icon: 'javazone.png',
@@ -88,10 +79,7 @@ $(function() {
             sound: "notification-sound.ogg"
           });
         } else {
-          $("#messages").append($("<p>").text("Not permitted to display notifications"));
-          if (permission === "denied") {
-            $("#showNotification").prop("disabled", true);
-          }
+          setApiSupport("notifications", Notification.permission);
         }
       });
     });
@@ -101,6 +89,18 @@ $(function() {
   $("#deregisterFromPush").prop("disabled", true);
   $("#clientName").val(localStorage.getItem("clientName"));
 
+  if (!("serviceWorker" in navigator)) {
+    setApiSupport("serviceworker", "missing");
+  } else {
+    setApiSupport("serviceworker", "default");    
+  }
+
+  if (!('PushManager' in window)) {
+    setApiSupport("PushManager", "missing");
+  } else {
+    setApiSupport("PushManager", "default");
+  }
+
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener('message', function(e) {
       console.log('on message');
@@ -108,12 +108,11 @@ $(function() {
     });
 
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
-      console.log(registration);
-
       // Throws exception in Opera
       registration.pushManager.permissionState({userVisibleOnly: true}).then(function(permission) {
+        setApiSupport("PushManager", permission);
+
         $("#registerForPush").click(function() {
-          console.log("subscribing");
           registration.pushManager.subscribe({userVisibleOnly: true}).then(function(sub) {
             sendSubscriptionToServer(sub);
           }, function(e) {
@@ -127,15 +126,9 @@ $(function() {
             if (sub) {
               sendSubscriptionToServer(sub);
             } else {
-              $("#registerForPush").prop("disabled", false);
-                          
+              $("#registerForPush").prop("disabled", false);                          
             }
           });          
-        } else if (permission === "denied") {
-          $("#messages").append($("<p>").text("Not permitted to push messages"));
-          $("#registerForPush").prop("disabled", true);
-        } else {
-          $("#registerForPush").prop("disabled", false);
         }
       });
     });

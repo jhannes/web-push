@@ -61,16 +61,26 @@ app.get('/api/messages', function(req, res) {
 });
 
 app.post('/api/push-me', function(req, res) {
+  var messageTemplates = {
+    "johannes": {
+      title: "Hello from Johannes",
+      text: "I hope you are enjoying JavaZone",
+      icon: "johannes-icon.jpg"
+    },
+    "javazone": {
+      title: "Web Push Test",
+      text: "Click to reopen webpage",
+      icon: "javazone.png"
+    }
+  };
+  var message = messageTemplates[req.query.message];
+
   res.status(200).end();
-  console.log('Notify in 5 seconds');
+
   var endpoint = req.query.endpoint;
   setTimeout(function() {
     console.log('Pushing to ' + endpoint);
-    sendPushMessages([endpoint], {
-      title: 'Hello',
-      text: 'Delayed message from push server',
-      icon: 'java.png'      
-    })
+    sendPushMessages([endpoint], message);
   }, 5000);
 });
 
@@ -84,6 +94,7 @@ app.post('/push/v1/pushPackages/web.net.openright.webpush', function(req, res) {
 
 app.post('/push/v1/log', function(req, res) {
   console.log(req.body);
+  res.status(200).end();
 });
 
 app.post('/api/notify', function(req) {

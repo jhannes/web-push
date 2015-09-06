@@ -1,37 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mobile push showcase</title>
+  <title>Web push showcase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <link rel="manifest" href="manifest.json" />
+  <style>
+  .notifications-support, .PushManager-support, .serviceworker-support {
+    display: none;
+  }
+  .denied {
+    color: red;
+  }
+  </style>
 </head>
 <body>
-  <h1>Push demo</h1>
+  <div id="notification-status" class="notifications-no">
+    <h1>Push demo</h1>
 
-  <div id="messages"></div>
+    <fieldset>
+      <h2><a href="https://notifications.spec.whatwg.org/">The Notification API</a></h2>
 
-  <p id="subscriptionId"></p>
+      <p>A living standard maintained by WhatWG. It is supported by Opera, Firefox (nightly) and Chrome.</p>
 
-  <p>
-    <label>
-      Your name:
-      <input type="name" id="clientName" required />
-    </label>
+      <p class="notifications-support missing">
+      The Notification API is not supported on your browser
+      </p>
 
-  </p>
+      <p class="notifications-support denied">
+      Not permitted to display notifications
+      </p>
 
-  <button id="showNotification">Show a notification</button>
+      <button class="notifications-support granted default" id="showNotification">Show a notification</button>
+    </fieldset>
 
-  <button id="registerForPush">Register for push</button>
 
-  <button id="deregisterFromPush">Deregister from push</button>
 
-  <button id="schedulePush" disabled>Push to me in 5 seconds</button>
+    <fieldset>
+      <h2><a href="http://www.w3.org/TR/push-api/">The PushManager API</a></h2>
 
-  <p>Manage permissions in the <a href="chrome://settings/contentExceptions#notifications">chrome://settings/contentExceptions#notifications</a> or <a href="about:permissions">about:permissions</a></p>
+      <p>A working draft supported by W3C. It is supported by Opera, Firefox (nightly) and Chrome. Opera's implementation seems to be buggy</p>
 
-  <script src="web-push.js"></script>
+      <p class="PushManager-support missing">
+      The PushManager API is not supported on your browser
+      </p>
 
+      <p class="PushManager-support denied warn">
+      Not permitted to push notifications
+      </p>
+
+      <div class="PushManager-support granted default">
+
+        <p>
+          <label>
+            Your name:
+            <input type="name" id="clientName" required />
+          </label>
+
+        </p>
+
+
+        <button id="registerForPush">Register for push</button>
+
+        <button id="deregisterFromPush">Deregister from push</button>
+
+        <button class="schedulePush" data-message="johannes" disabled>Push to me in 5 seconds</button>
+
+        <button class="schedulePush" data-message="javazone" disabled>Push to me in 5 seconds</button>
+
+        <div class="subscribed">
+          <h4><a href="#">Your endpointId</a></h4>
+          <textarea id="subscriptionId" cols="100" rows="5"></textarea>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <h3><a href="http://www.w3.org/TR/service-workers/">The Service worker API</a></h3>
+  
+      <p>It is supported by Chrome, Opera (as an experimental flag under opera://flags) and Firefox Nightly (as an experimental flag under about:config). It is used for background jobs. In addition to receiving push notifications, it's intended to be used for caching.</p>
+
+      <p class="serviceworker-support missing">
+      The Service worker API is not supported on your browser
+      </p>
+
+    </fieldset>
+
+    <p>Manage permissions in the <a href="chrome://settings/contentExceptions#notifications">chrome://settings/contentExceptions#notifications</a> (Chrome) or <a href="about:permissions">about:permissions</a> (Firefox)</p>
+
+    <script src="web-push.js"></script>
+
+  </div>
 </body>
 </html>
