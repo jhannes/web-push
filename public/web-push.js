@@ -80,11 +80,11 @@ $(function() {
     }
     $("#showNotification").click(function() {
       Notification.requestPermission(function(permission) {
-        console.log("Notification permission", permission);
+        console.log("Push notifications", permission);
         if (permission === "granted") {
-          new Notification('Notification title', {
-            icon: 'johannes-icon.jpg',
-            body: "Hey there! You've been notified!",
+          new Notification('Notification message', {
+            icon: 'javazone.png',
+            body: "This is an example of a push notification",
             sound: "notification-sound.ogg"
           });
         } else {
@@ -108,6 +108,9 @@ $(function() {
     });
 
     navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
+      console.log(registration);
+
+      // Throws exception in Opera
       registration.pushManager.permissionState({userVisibleOnly: true}).then(function(permission) {
         $("#registerForPush").click(function() {
           console.log("subscribing");

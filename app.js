@@ -15,9 +15,7 @@ if (!apiKey) {
 }
 
 app.use(function requireHttps(req, res, next) {
-  console.log("requireHttps middlware", req.headers.host);
   if(req.headers.host != "localhost:1337" && req.headers['x-forwarded-proto'] != 'https') {
-    console.log("Redirecting to https");
     return res.redirect('https://' + req.headers.host + req.url);
   } else {
     return next();
@@ -80,9 +78,14 @@ app.get('/api/last-message', function(req, res) {
   res.json(clients[req.query.endpoint].lastMessage).end();
 });
 
+app.post('/v1/pushPackages/web.net.openright.webpush', function(req, res) {
+  res.sendFile('public/web.net.openright.webpush.zip');  
+});
+
+
 app.post('/api/notify', function(req) {
   var endpoints = req.body.endpoints;
-  console.log(endpoints);
+  console.log(req.body);
 
   sendPushMessages(endpoints, {
     title: req.body.title,
@@ -92,16 +95,13 @@ app.post('/api/notify', function(req) {
   });
 });
 
-app.listen(process.env.PORT || 1337, function() {
-  console.log('started');
-});
-
 function sendPushMessages(endpoints, message) {
   endpoints.forEach(function(endpoint) {
     if (clients[endpoint]) {
       clients[endpoint].lastMessage = message;
     }
   });
+  console.log(clients);
 
   sendGoogleNotifications(endpoints);
   sendMozillaNotifications(endpoints);
@@ -141,3 +141,9 @@ function sendGoogleNotifications(endpoints) {
     }
   });
 }
+
+
+app.listen(process.env.PORT || 1337, function() {
+  console.log('started');
+});
+

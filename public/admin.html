@@ -44,7 +44,8 @@
     </fieldset>
     <fieldset id="message-image">
       <legend>Message image</legend>
-      <label><img src="java.png" alt="Java"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="java.png" checked></label>
+      <label><img src="javazone.png" alt="JavaZone"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="javazone.png" checked></label>
+      <label><img src="java.png" alt="Java"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="java.png" ></label>
       <label><img src="johannes-icon.jpg" alt="Johannes"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="johannes-icon.jpg"></label>
       <label><img src="cat.jpg" alt="Random cat"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="cat.jpg"></label>
       <label><img src="sopra-steria.jpeg" alt="Sopra Steria logo"><input id="pushMessageIcon" name="pushMessageIcon" type="radio" required value="sopra-steria.jpeg"></label>
@@ -65,6 +66,7 @@ $(function() {
       var input = $("<input>")
         .addClass("clientEndpoint")
         .attr("type", "checkbox").attr("name", "endpoints[]")
+        .attr("checked", "checked")
         .val(data.clients[i].endpoint);
       var label = $("<label>")
         .append(input)
@@ -79,7 +81,7 @@ $(function() {
     var notification = {
       title: $("#pushMessageTitle").val(),
       text: $("#pushMessageText").val(),
-      icon: $("#pushMessageIcon").val(),
+      icon: $("#pushMessageIcon:checked").val(),
       description: $("#pushMessageDescription").val(),
       endpoints: []
     };
