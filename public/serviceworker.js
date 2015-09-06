@@ -14,8 +14,8 @@ self.addEventListener('push', function(event) {
       var notification = {
         body: lastMessage.text,
         icon: lastMessage.icon,
-        sound: "notification-sound.ogg",
-        vibrate: [200, 100, 200, 100, 200, 100, 200],
+        sound: "notification-sound.ogg", // Doesn't work
+        vibrate: [200, 100, 200, 100, 200, 100, 200], // Doesn't work
         tag: "web-push-message"
       };
       return self.registration.showNotification(lastMessage.title, notification);
@@ -30,6 +30,7 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(
     clients.matchAll()
     .then(function(clientList) {
+      console.log("clientList", clientList);
       if (clientList.length) {
         return clientList[0].focus();
       }

@@ -55,7 +55,7 @@ function sendSubscriptionToServer(sub) {
   ajax.post('/api/registrations', registration).then(function() {
     console.log("successful");
   });
-};
+}
 
 function setApiSupport(apiName, support) {
   $("." + apiName + "-support").hide();
@@ -88,6 +88,12 @@ $(function() {
 
   $("#deregisterFromPush").prop("disabled", true);
   $("#clientName").val(localStorage.getItem("clientName"));
+
+  $("#subscriptionId").hide();
+  $("#showSubscriptionId").click(function(e) {
+    e.preventDefault();
+    $("#subscriptionId").toggle();
+  });
 
   if (!("serviceWorker" in navigator)) {
     setApiSupport("serviceworker", "missing");

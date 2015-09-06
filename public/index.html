@@ -31,7 +31,7 @@
       Not permitted to display notifications
       </p>
 
-      <button class="notifications-support granted default" id="showNotification">Show a notification</button>
+      <button class="notifications-support granted default prompt" id="showNotification">Show a notification</button>
     </fieldset>
 
 
@@ -49,7 +49,7 @@
       Not permitted to push notifications
       </p>
 
-      <div class="PushManager-support granted default">
+      <div class="PushManager-support granted default prompt">
 
         <p>
           <label>
@@ -69,11 +69,11 @@
         <button class="schedulePush" data-message="javazone" disabled>Push to me in 5 seconds</button>
 
         <div class="subscribed">
-          <h4><a href="#">Your endpointId</a></h4>
-          <textarea id="subscriptionId" cols="100" rows="5"></textarea>
+          <h4><a href="#" id="showSubscriptionId">Your endpointId</a></h4>
         </div>
       </div>
     </fieldset>
+    <textarea id="subscriptionId" cols="100" rows="5"></textarea>
     <fieldset>
       <h3><a href="http://www.w3.org/TR/service-workers/">The Service worker API</a></h3>
   
