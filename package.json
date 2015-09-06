@@ -22,5 +22,10 @@
     "node-rest-client": "^1.4.8",
     "request": "^2.61.0",
     "request-json": "^0.5.2"
+  },
+  "devDependencies": {
+    "archiver": "^0.15.0",
+    "promise": "^7.0.4",
+    "walk-tree-as-promised": "0.0.10"
   }
 }

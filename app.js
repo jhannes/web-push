@@ -78,10 +78,13 @@ app.get('/api/last-message', function(req, res) {
   res.json(clients[req.query.endpoint].lastMessage).end();
 });
 
-app.post('/v1/pushPackages/web.net.openright.webpush', function(req, res) {
+app.post('/push/v1/pushPackages/web.net.openright.webpush', function(req, res) {
   res.sendFile('public/web.net.openright.webpush.zip');  
 });
 
+app.post('/push/v1/log', function(req, res) {
+  console.log(req.body);
+});
 
 app.post('/api/notify', function(req) {
   var endpoints = req.body.endpoints;
@@ -93,6 +96,11 @@ app.post('/api/notify', function(req) {
     icon: req.body.icon,
     description: req.body.description
   });
+});
+
+app.get('*', function(req, res) {
+  console.warn("Unexpected request" , req.url);
+  res.status(404).send('what???');
 });
 
 function sendPushMessages(endpoints, message) {

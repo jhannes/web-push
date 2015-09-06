@@ -1,0 +1,8 @@
+{
+    "websiteName": "JavaZone Web Push",
+    "websitePushID": "web.net.openright.webpush",
+    "allowedDomains": ["https://web-push.herokuapp.com"],
+    "urlFormatString": "https://web-push.herokuapp.com/%@",
+    "authenticationToken": "abcdabcdabcdabcdabcdabcd",
+    "webServiceURL": "https://web-push.herokuapp.com/push"
+}
