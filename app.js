@@ -89,7 +89,7 @@ app.get('/api/last-message', function(req, res) {
 });
 
 app.post('/push/v1/pushPackages/web.net.openright.webpush', function(req, res) {
-  res.sendFile('public/web.net.openright.webpush.zip');  
+  res.sendFile(__dirname + '/public/WebPush.pushpackage.zip');  
 });
 
 app.post('/push/v1/log', function(req, res) {
