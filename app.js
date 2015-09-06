@@ -92,6 +92,11 @@ app.post('/push/v1/pushPackages/web.net.openright.webpush', function(req, res) {
   res.sendFile(__dirname + '/public/WebPush.pushpackage.zip');  
 });
 
+app.post('/push/v1/devices/*/registrations/*', function(req, res) {
+  console.log(req.url);
+  res.status(200).end();
+});
+
 app.post('/push/v1/log', function(req, res) {
   console.log(req.body);
   res.status(200).end();
