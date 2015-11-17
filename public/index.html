@@ -18,22 +18,6 @@
   <div id="notification-status" class="notifications-no">
     <h1>Push demo</h1>
 
-    <fieldset>
-      <h2><a href="https://notifications.spec.whatwg.org/">The Notification API</a></h2>
-
-      <p>A living standard maintained by WhatWG. It is supported by Opera, Firefox (nightly) and Chrome.</p>
-
-      <p class="notifications-support missing">
-      The Notification API is not supported on your browser
-      </p>
-
-      <p class="notifications-support denied">
-      Not permitted to display notifications
-      </p>
-
-      <button class="notifications-support granted default prompt" id="showNotification">Show a notification</button>
-    </fieldset>
-
 
 
     <fieldset>
@@ -66,7 +50,7 @@
 
         <button class="schedulePush" data-message="johannes" disabled>Push to me in 5 seconds</button>
 
-        <button class="schedulePush" data-message="javazone" disabled>Push to me in 5 seconds</button>
+        <button class="schedulePush" data-message="soprasteria" disabled>Push to me in 5 seconds</button>
 
         <div class="subscribed">
           <h4><a href="#" id="showSubscriptionId">Your endpointId</a></h4>
@@ -74,10 +58,28 @@
       </div>
     </fieldset>
     <textarea id="subscriptionId" cols="100" rows="5"></textarea>
+
+    <fieldset>
+      <h2><a href="https://notifications.spec.whatwg.org/">The Notification API</a></h2>
+
+      <p>Web Push relies on the Notification API - a living standard maintained by WhatWG. It is supported by Opera, Firefox (nightly) and Chrome.</p>
+
+      <p class="notifications-support missing">
+      The Notification API is not supported on your browser
+      </p>
+
+      <p class="notifications-support denied">
+      Not permitted to display notifications
+      </p>
+
+      <button class="notifications-support granted default prompt" id="showNotification">Show a notification</button>
+    </fieldset>
+
+
     <fieldset>
       <h3><a href="http://www.w3.org/TR/service-workers/">The Service worker API</a></h3>
   
-      <p>It is supported by Chrome, Opera (as an experimental flag under opera://flags) and Firefox Nightly (as an experimental flag under about:config). It is used for background jobs. In addition to receiving push notifications, it's intended to be used for caching.</p>
+      <p>Web Push uses the Service Worker API, which is supported by Chrome, Opera (as an experimental flag under opera://flags) and Firefox Nightly (as an experimental flag under about:config). It is used for background jobs. In addition to receiving push notifications, it's intended to be used for caching.</p>
 
       <p class="serviceworker-support missing">
       The Service worker API is not supported on your browser

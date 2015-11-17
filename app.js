@@ -64,13 +64,13 @@ app.post('/api/push-me', function(req, res) {
   var messageTemplates = {
     "johannes": {
       title: "Hello from Johannes",
-      text: "I hope you are enjoying JavaZone",
+      text: "I hope you are enjoying this presentation",
       icon: "johannes-icon.jpg"
     },
-    "javazone": {
-      title: "Web Push Test",
-      text: "Click to reopen webpage",
-      icon: "javazone.png"
+    "soprasteria": {
+      title: "SopraSteria mobile group",
+      text: "Remember to go to the frontend group meeting today",
+      icon: "sopra-steria.jpeg"
     }
   };
   var message = messageTemplates[req.query.message];
